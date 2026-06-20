@@ -10,7 +10,7 @@ interface ExpenseSectionProps {
   onAddExpense: (amount: number, purpose: string, audio?: string) => Promise<void>;
   onEditExpense?: (id: string, amount: number, purpose: string, audio?: string, date?: string) => Promise<void>;
   onDeleteExpense?: (id: string) => Promise<void>;
-  timeFilter?: 'month' | 'year' | 'all';
+  timeFilter?: 'today' | 'month' | 'year' | 'all';
 }
 
 export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
@@ -244,8 +244,11 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
   const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
   const currentMonthKey = `${currentYear}-${currentMonth}`;
 
+  const todayKey = now.toISOString().split('T')[0];
+
   const filteredExpenses = expenses.filter(expense => {
     if (timeFilter === 'all') return true;
+    if (timeFilter === 'today') return expense.date === todayKey;
     if (timeFilter === 'month') return expense.date.startsWith(currentMonthKey);
     if (timeFilter === 'year') return expense.date.startsWith(currentYear);
     return true;
@@ -254,12 +257,12 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
   const totalExpense = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-      {/* Add Expense Form (Admin only) - 4 cols */}
+    <div className="w-full grid grid-cols-1 gap-6">
+      {/* Add Expense Form (Admin only) */}
       {isAdmin && (
         <form 
           onSubmit={handleExpenseSubmit} 
-          className="lg:col-span-4 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-3xl p-5 md:p-6 shadow-sm space-y-4 h-fit"
+          className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-3xl p-5 md:p-6 shadow-sm space-y-4 h-fit"
         >
           <h3 className="text-lg font-bold text-gray-800 dark:text-emerald-100 flex items-center gap-2">
             <svg className="w-5 h-5 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.25">
@@ -352,25 +355,25 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
         </form>
       )}
 
-      {/* Expense List - 8 or 12 cols depending on isAdmin */}
-      <div className={`${isAdmin ? 'lg:col-span-8' : 'lg:col-span-12'} bg-[#059669] dark:bg-emerald-900 border border-emerald-500 rounded-3xl p-4 md:p-6 shadow-md text-white space-y-4`}>
+      {/* Expense List */}
+      <div className="bg-[#059669] dark:bg-emerald-900 border border-emerald-500 rounded-3xl p-4 md:p-6 shadow-md text-white space-y-4">
         <div className="flex flex-wrap justify-between items-start gap-4 pb-4 border-b border-emerald-500/30">
-          <div className="flex-1 min-w-[200px]">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+          <div className="flex-1 min-w-[150px]">
+            <h3 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
               <svg className="w-5 h-5 text-amber-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.25">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               खर्चों की सूची
             </h3>
-            <p className="text-xs text-emerald-100 mt-1.5 font-medium max-w-xs md:max-w-sm">
-              {mode === 'masjid' ? 'मस्जिद' : 'मदरसा'} के विकास व अन्य मदों में {timeFilter === 'month' ? 'इस महीने' : timeFilter === 'year' ? 'इस साल' : 'कुल'} किए गए खर्चों का लेखा-जोखा
+            <p className="text-[10px] md:text-xs leading-relaxed text-emerald-100 mt-1 font-medium max-w-xs md:max-w-sm">
+              {mode === 'masjid' ? 'मस्जिद' : 'मदरसा'} के विकास व अन्य मदों में {timeFilter === 'today' ? 'आज' : timeFilter === 'month' ? 'इस महीने' : timeFilter === 'year' ? 'इस साल' : 'कुल'} किए गए खर्चों का लेखा-जोखा
             </p>
           </div>
-          <div className="text-right">
-            <span className="text-xs text-emerald-100 font-semibold block">
-              {timeFilter === 'month' ? 'इस महीने का खर्च' : timeFilter === 'year' ? 'इस साल का खर्च' : 'कुल खर्च'}
+          <div className="text-right shrink-0">
+            <span className="text-xs md:text-sm text-emerald-100/90 font-bold block uppercase">
+              {timeFilter === 'today' ? 'आज का खर्च' : timeFilter === 'month' ? 'इस महीने का खर्च' : timeFilter === 'year' ? 'इस साल का खर्च' : 'कुल खर्च'}
             </span>
-            <span className="text-lg font-extrabold text-rose-100 dark:text-rose-300 font-numbers">
+            <span className="text-xl md:text-2xl font-black text-amber-300 font-numbers">
               ₹{totalExpense.toLocaleString('en-IN')}
             </span>
           </div>
@@ -682,7 +685,7 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
                     <div className="flex items-center justify-between gap-3 text-xs w-full">
                       {/* Left side: Date & Description */}
                       <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <span className="text-[10px] text-gray-400 dark:text-gray-500 font-semibold font-numbers shrink-0">
+                        <span className="text-xs text-gray-700 dark:text-gray-300 font-bold font-numbers shrink-0">
                           {formatDate(expense.date)}
                         </span>
                         <div className="font-semibold text-gray-700 dark:text-emerald-100 truncate">
@@ -694,7 +697,7 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
                       
                       {/* Right side: Amount & Actions */}
                       <div className="flex items-center gap-2.5 shrink-0">
-                        <span className="font-numbers font-extrabold text-rose-600 dark:text-rose-400 text-sm">
+                        <span className="font-numbers font-black text-rose-700 dark:text-rose-400 text-base">
                           ₹{expense.amount.toLocaleString('en-IN')}
                         </span>
                         {isAdmin && (

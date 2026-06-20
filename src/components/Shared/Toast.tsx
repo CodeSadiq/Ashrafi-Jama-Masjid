@@ -63,9 +63,9 @@ export const Toast: React.FC<ToastProps> = ({
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 animate-bounce-short">
+    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 animate-bounce-short">
       <div
-        className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md transition-all duration-300 max-w-sm ${getStyle()}`}
+        className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md transition-all duration-300 max-w-md md:max-w-lg w-max ${getStyle()}`}
       >
         {getIcon()}
         <p className="text-sm font-semibold pr-2 leading-relaxed">{message}</p>

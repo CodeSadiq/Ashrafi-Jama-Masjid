@@ -4,7 +4,7 @@ import type { FundStats } from '../db';
 interface DashboardCardsProps {
   stats: FundStats;
   loading: boolean;
-  timeFilter: 'month' | 'year' | 'all';
+  timeFilter: 'today' | 'month' | 'year' | 'all';
 }
 
 // Custom counter animation hook/component
@@ -48,8 +48,8 @@ const AnimatedCounter: React.FC<{ value: number }> = ({ value }) => {
 };
 
 export const DashboardCards: React.FC<DashboardCardsProps> = ({ stats, loading, timeFilter }) => {
-  const filterLabel = timeFilter === 'month' ? 'इस महीने का' : timeFilter === 'year' ? 'इस साल का' : 'कुल';
-  const filterSubtitle = timeFilter === 'month' ? 'वर्तमान माह की' : timeFilter === 'year' ? 'वर्तमान वर्ष की' : 'शुरू से अब तक की';
+  const filterLabel = timeFilter === 'today' ? 'आज का' : timeFilter === 'month' ? 'इस महीने का' : timeFilter === 'year' ? 'इस साल का' : 'कुल';
+  const filterSubtitle = timeFilter === 'today' ? 'आज की' : timeFilter === 'month' ? 'वर्तमान माह की' : timeFilter === 'year' ? 'वर्तमान वर्ष की' : 'शुरू से अब तक की';
 
   const cardData = [
     {

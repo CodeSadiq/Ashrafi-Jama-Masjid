@@ -35,7 +35,8 @@ export const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
   const [mode, setMode] = useState<'masjid' | 'madrasa'>('masjid');
-  const [timeFilter, setTimeFilter] = useState<'month' | 'year' | 'all'>('all');
+  const [timeFilter, setTimeFilter] = useState<'today' | 'month' | 'year' | 'all'>('all');
+  const [reportTimeFilter, setReportTimeFilter] = useState<'today' | 'month' | 'year' | 'all'>('all');
   const [members, setMembers] = useState<Member[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [donations, setDonations] = useState<Donation[]>([]);
@@ -56,6 +57,36 @@ export const App: React.FC = () => {
   const [loginCode, setLoginCode] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState('');
+
+  // Confirmation Modal State
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
+
+  const [deleteConfirmCode, setDeleteConfirmCode] = useState('');
+  const [deleteConfirmError, setDeleteConfirmError] = useState('');
+
+  const showConfirm = (title: string, message: string, onConfirm: () => void) => {
+    setDeleteConfirmCode('');
+    setDeleteConfirmError('');
+    setConfirmModal({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: () => {
+        onConfirm();
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+      }
+    });
+  };
 
   const showToast = (message: string, type: ToastType) => {
     setToast({ message, type });
@@ -83,30 +114,68 @@ export const App: React.FC = () => {
       const expList = await getExpenses(reportMode);
       const donList = await getDonations(reportMode, false);
 
-      const donationsSum = donList.reduce((sum, d) => sum + d.amount, 0);
+      const now = new Date();
+      const currentYear = now.getFullYear().toString();
+      const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+      const currentMonthKey = `${currentYear}-${currentMonth}`;
+      const todayKey = now.toISOString().split('T')[0];
+
+      // 1. Filter donations
+      const filteredDonations = donList.filter(d => {
+        if (reportTimeFilter === 'all') return true;
+        if (reportTimeFilter === 'today') return d.date === todayKey;
+        if (reportTimeFilter === 'month') return d.date.startsWith(currentMonthKey);
+        if (reportTimeFilter === 'year') return d.date.startsWith(currentYear);
+        return true;
+      });
+      const donationsSum = filteredDonations.reduce((sum, d) => sum + d.amount, 0);
+
+      // 2. Filter contributions
       let contributionsSum = 0;
       memList.forEach(m => {
         Object.entries(m.contributions || {}).forEach(([key, contribution]) => {
           let conMode = 'masjid';
+          let conMonth = key;
           if (key.includes('_')) {
-            conMode = key.split('_')[0];
+            const parts = key.split('_');
+            conMode = parts[0];
+            conMonth = parts[1];
           }
           if (conMode === reportMode) {
-            contributionsSum += contribution.amount;
+            if (reportTimeFilter === 'all') {
+              contributionsSum += contribution.amount;
+            } else if (reportTimeFilter === 'today' && contribution.date === todayKey) {
+              contributionsSum += contribution.amount;
+            } else if (reportTimeFilter === 'month' && conMonth === currentMonthKey) {
+              contributionsSum += contribution.amount;
+            } else if (reportTimeFilter === 'year' && conMonth.startsWith(currentYear)) {
+              contributionsSum += contribution.amount;
+            }
           }
         });
       });
 
       const totalCollection = donationsSum + contributionsSum;
-      const totalExpenses = expList.reduce((sum, e) => sum + e.amount, 0);
+
+      // 3. Filter expenses
+      const filteredExpenses = expList.filter(e => {
+        if (reportTimeFilter === 'all') return true;
+        if (reportTimeFilter === 'today') return e.date === todayKey;
+        if (reportTimeFilter === 'month') return e.date.startsWith(currentMonthKey);
+        if (reportTimeFilter === 'year') return e.date.startsWith(currentYear);
+        return true;
+      });
+      const totalExpenses = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
       const netBalance = totalCollection - totalExpenses;
 
       const today = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
       let csvContent = '\uFEFF'; // UTF-8 BOM
 
+      const timeframeLabel = reportTimeFilter === 'today' ? 'आज' : reportTimeFilter === 'month' ? 'इस महीने' : reportTimeFilter === 'year' ? 'इस साल' : 'कुल (शुरू से अब तक)';
+
       csvContent += `"${reportMode === 'masjid' ? 'अशरफ़ी जामा मस्जिद' : 'मदरसा गौसिया रिजविया रेयायतुल ऊलूम'}"\n`;
-      csvContent += `"वित्तीय रिपोर्ट (Financial Report)","तारीख: ${today}"\n\n`;
+      csvContent += `"वित्तीय रिपोर्ट (${timeframeLabel})","तारीख: ${today}"\n\n`;
 
       csvContent += `"विवरण (Summary)","राशि (Amount)"\n`;
       csvContent += `"कुल आय (Total Collection)","₹${totalCollection}"\n`;
@@ -114,16 +183,27 @@ export const App: React.FC = () => {
       csvContent += `"शेष राशि (Net Balance)","₹${netBalance}"\n\n`;
 
       csvContent += `"1. सहयोगी सदस्य व स्रोत विवरण (Contributors & Sources)"\n`;
-      csvContent += `"क्र.सं. (S.No.)","नाम (Name)","मोबाइल (Mobile)","प्रकार (Type)","कुल सहयोग (Total Paid)"\n`;
+      csvContent += `"क्र.सं. (S.No.)","नाम (Name)","मोबाइल (Mobile)","प्रकार (Type)","सहयोग राशि (Paid Amount)"\n`;
       memList.forEach((m, idx) => {
         let totalM = 0;
         Object.entries(m.contributions || {}).forEach(([key, contribution]) => {
           let conMode = 'masjid';
+          let conMonth = key;
           if (key.includes('_')) {
-            conMode = key.split('_')[0];
+            const parts = key.split('_');
+            conMode = parts[0];
+            conMonth = parts[1];
           }
           if (conMode === reportMode) {
-            totalM += contribution.amount;
+            if (reportTimeFilter === 'all') {
+              totalM += contribution.amount;
+            } else if (reportTimeFilter === 'today' && contribution.date === todayKey) {
+              totalM += contribution.amount;
+            } else if (reportTimeFilter === 'month' && conMonth === currentMonthKey) {
+              totalM += contribution.amount;
+            } else if (reportTimeFilter === 'year' && conMonth.startsWith(currentYear)) {
+              totalM += contribution.amount;
+            }
           }
         });
         csvContent += `"${idx + 1}","${m.name}","${m.mobile || 'N/A'}","${m.memberType === 'source' ? 'स्रोत (Source)' : 'सहयोगी (Member)'}","₹${totalM}"\n`;
@@ -132,7 +212,7 @@ export const App: React.FC = () => {
 
       csvContent += `"2. खर्चों की सूची (Expense Statement)"\n`;
       csvContent += `"क्र.सं. (S.No.)","तारीख (Date)","विवरण (Purpose)","राशि (Amount)"\n`;
-      expList.forEach((e, idx) => {
+      filteredExpenses.forEach((e, idx) => {
         csvContent += `"${idx + 1}","${e.date}","${e.purpose}","₹${e.amount}"\n`;
       });
 
@@ -140,7 +220,8 @@ export const App: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', `${reportMode}_report_${today.replace(/\//g, '-')}.csv`);
+      const filterName = reportTimeFilter === 'today' ? 'today' : reportTimeFilter === 'month' ? 'month' : reportTimeFilter === 'year' ? 'year' : 'all_time';
+      link.setAttribute('download', `${reportMode}_report_${filterName}_${today.replace(/\//g, '-')}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -183,7 +264,7 @@ export const App: React.FC = () => {
 
   // Prevent background scrolling when modals are open
   useEffect(() => {
-    if (showCommitteeModal || showLoginModal) {
+    if (showCommitteeModal || showLoginModal || confirmModal.isOpen) {
       document.body.classList.add('overflow-hidden');
     } else {
       document.body.classList.remove('overflow-hidden');
@@ -191,7 +272,7 @@ export const App: React.FC = () => {
     return () => {
       document.body.classList.remove('overflow-hidden');
     };
-  }, [showCommitteeModal, showLoginModal]);
+  }, [showCommitteeModal, showLoginModal, confirmModal.isOpen]);
 
   // Auth Handlers
   const handleAdminClick = async () => {
@@ -246,14 +327,19 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteMember = async (id: string, name: string) => {
-    if (!confirm(`क्या आप सच में "${name}" को हटाना चाहते हैं?`)) return;
-    try {
-      await deleteMember(id);
-      showToast('सहयोगी सदस्य को हटा दिया गया', 'warning');
-      fetchDashboardData();
-    } catch (e) {
-      showToast('सदस्य हटाने में त्रुटि', 'error');
-    }
+    showConfirm(
+      'सहयोगी को हटाएँ',
+      `क्या आप सच में "${name}" को हटाना चाहते हैं?`,
+      async () => {
+        try {
+          await deleteMember(id);
+          showToast('सहयोगी सदस्य को हटा दिया गया', 'warning');
+          fetchDashboardData();
+        } catch (e) {
+          showToast('सदस्य हटाने में त्रुटि', 'error');
+        }
+      }
+    );
   };
 
   const handleRecordContribution = async (memberId: string, amount: number, date?: string) => {
@@ -287,14 +373,19 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteContribution = async (memberId: string, key: string) => {
-    if (!confirm('क्या आप सच में इस सहयोग राशि को हटाना चाहते हैं?')) return;
-    try {
-      await recordContribution(memberId, mode, '', 0, false, key);
-      showToast('सहयोग राशि सफलतापूर्वक हटा दी गई!', 'warning');
-      fetchDashboardData();
-    } catch (e) {
-      showToast('सहयोग राशि हटाने में त्रुटि', 'error');
-    }
+    showConfirm(
+      'सहयोग राशि हटाएँ',
+      'क्या आप सच में इस सहयोग राशि को हटाना चाहते हैं?',
+      async () => {
+        try {
+          await recordContribution(memberId, mode, '', 0, false, key);
+          showToast('सहयोग राशि सफलतापूर्वक हटा दी गई!', 'warning');
+          fetchDashboardData();
+        } catch (e) {
+          showToast('सहयोग राशि हटाने में त्रुटि', 'error');
+        }
+      }
+    );
   };
 
   const handleAddExpense = async (amount: number, purpose: string, audio?: string) => {
@@ -330,14 +421,19 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteExpense = async (id: string) => {
-    if (!confirm('क्या आप सच में इस खर्च को हटाना चाहते हैं?')) return;
-    try {
-      await deleteExpense(id);
-      showToast('खर्च को सफलतापूर्वक हटा दिया गया', 'warning');
-      fetchDashboardData();
-    } catch (e) {
-      showToast('खर्च हटाने में त्रुटि', 'error');
-    }
+    showConfirm(
+      'खर्च विवरण हटाएँ',
+      'क्या आप सच में इस खर्च को हटाना चाहते हैं?',
+      async () => {
+        try {
+          await deleteExpense(id);
+          showToast('खर्च को सफलतापूर्वक हटा दिया गया', 'warning');
+          fetchDashboardData();
+        } catch (e) {
+          showToast('खर्च हटाने में त्रुटि', 'error');
+        }
+      }
+    );
   };
 
   const getFilteredStats = (): FundStats => {
@@ -346,10 +442,12 @@ export const App: React.FC = () => {
     const currentYear = now.getFullYear().toString();
     const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
     const currentMonthKey = `${currentYear}-${currentMonth}`;
+    const todayKey = now.toISOString().split('T')[0];
 
     // 1. Filter donations
     const filteredDonations = donations.filter(d => {
       if (activeFilter === 'all') return true;
+      if (activeFilter === 'today') return d.date === todayKey;
       if (activeFilter === 'month') return d.date.startsWith(currentMonthKey);
       if (activeFilter === 'year') return d.date.startsWith(currentYear);
       return true;
@@ -371,6 +469,8 @@ export const App: React.FC = () => {
         if (conMode === mode) {
           if (activeFilter === 'all') {
             contributionsSum += contribution.amount;
+          } else if (activeFilter === 'today' && contribution.date === todayKey) {
+            contributionsSum += contribution.amount;
           } else if (activeFilter === 'month' && conMonth === currentMonthKey) {
             contributionsSum += contribution.amount;
           } else if (activeFilter === 'year' && conMonth.startsWith(currentYear)) {
@@ -385,6 +485,7 @@ export const App: React.FC = () => {
     // 3. Filter expenses
     const filteredExpenses = expenses.filter(e => {
       if (activeFilter === 'all') return true;
+      if (activeFilter === 'today') return e.date === todayKey;
       if (activeFilter === 'month') return e.date.startsWith(currentMonthKey);
       if (activeFilter === 'year') return e.date.startsWith(currentYear);
       return true;
@@ -447,6 +548,7 @@ export const App: React.FC = () => {
                   onChange={(e) => setTimeFilter(e.target.value as any)}
                   className="w-full pl-4 pr-10 py-3 text-base font-bold rounded-2xl glass-input appearance-none text-islamic-green dark:text-emerald-300 cursor-pointer shadow-sm text-center"
                 >
+                  <option value="today" className="bg-white dark:bg-dark-card text-gray-800 dark:text-emerald-100 text-left">आज का लेखा-जोखा (Today)</option>
                   <option value="month" className="bg-white dark:bg-dark-card text-gray-800 dark:text-emerald-100 text-left">इस महीने का लेखा-जोखा (This Month)</option>
                   <option value="year" className="bg-white dark:bg-dark-card text-gray-800 dark:text-emerald-100 text-left">इस साल का लेखा-जोखा (This Year)</option>
                   <option value="all" className="bg-white dark:bg-dark-card text-gray-800 dark:text-emerald-100 text-left">कुल लेखा-जोखा (All Time)</option>
@@ -463,31 +565,34 @@ export const App: React.FC = () => {
           {/* Financial indicators cards */}
           <DashboardCards stats={getFilteredStats()} loading={loading} timeFilter={activeFilter} />
 
-          {/* Unified Admin Contributors ledger list */}
-          <PublicSources
-            members={members}
-            mode={mode}
-            loading={loading}
-            isAdmin={isAdminMode}
-            onAddMember={handleAddMember}
-            onDeleteMember={handleDeleteMember}
-            onRecordContribution={handleRecordContribution}
-            onDeleteContribution={handleDeleteContribution}
-            onEditContribution={handleEditContribution}
-            timeFilter={activeFilter}
-          />
+          {/* Grid Container for Side-by-Side Cards on Desktop */}
+          <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            {/* Unified Admin Contributors ledger list */}
+            <PublicSources
+              members={members}
+              mode={mode}
+              loading={loading}
+              isAdmin={isAdminMode}
+              onAddMember={handleAddMember}
+              onDeleteMember={handleDeleteMember}
+              onRecordContribution={handleRecordContribution}
+              onDeleteContribution={handleDeleteContribution}
+              onEditContribution={handleEditContribution}
+              timeFilter={activeFilter}
+            />
 
-          {/* Unified Admin Expenses list */}
-          <ExpenseSection
-            expenses={expenses}
-            loading={loading}
-            isAdmin={isAdminMode}
-            mode={mode}
-            onAddExpense={handleAddExpense}
-            onEditExpense={handleEditExpense}
-            onDeleteExpense={handleDeleteExpense}
-            timeFilter={activeFilter}
-          />
+            {/* Unified Admin Expenses list */}
+            <ExpenseSection
+              expenses={expenses}
+              loading={loading}
+              isAdmin={isAdminMode}
+              mode={mode}
+              onAddExpense={handleAddExpense}
+              onEditExpense={handleEditExpense}
+              onDeleteExpense={handleDeleteExpense}
+              timeFilter={activeFilter}
+            />
+          </div>
 
           {/* Admin Reports Panel */}
           {isAdminMode && (
@@ -507,15 +612,33 @@ export const App: React.FC = () => {
                         : 'वर्तमान तिथि तक मदरसा के वित्तीय विवरणों (आय, व्यय एवं खाता बही) की Excel CSV रिपोर्ट डाउनलोड करें।'}
                     </p>
                   </div>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="grid grid-cols-2 gap-3 w-full md:flex md:w-auto md:items-center">
+                    <div className="relative w-full md:w-auto">
+                      <select
+                        value={reportTimeFilter}
+                        onChange={(e) => setReportTimeFilter(e.target.value as any)}
+                        className="w-full md:w-auto pl-4 pr-9 py-3 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-xs md:text-sm font-bold rounded-xl appearance-none text-emerald-800 dark:text-emerald-300 cursor-pointer shadow-sm text-center focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                      >
+                        <option value="all">कुल (All Time)</option>
+                        <option value="year">इस साल का (This Year)</option>
+                        <option value="month">इस महीने का (This Month)</option>
+                        <option value="today">आज का (Today)</option>
+                      </select>
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-emerald-800 dark:text-emerald-300">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+
                     <button
                       onClick={() => downloadCSVReport(mode)}
-                      className="flex items-center gap-2.5 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+                      className="w-full md:w-auto flex items-center justify-center gap-2.5 px-4 md:px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs md:text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer whitespace-nowrap"
                     >
                       <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
-                      <span>CSV रिपोर्ट डाउनलोड करें</span>
+                      <span>Download Report</span>
                     </button>
                   </div>
                 </div>
@@ -745,6 +868,68 @@ export const App: React.FC = () => {
               </button>
             </div>
           </form>
+        </div>
+      )}
+      {/* Custom Confirmation Modal Overlay */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl relative text-center">
+            <div className="w-12 h-12 bg-rose-50 dark:bg-rose-950/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-2">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-gray-800 dark:text-emerald-100">{confirmModal.title}</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{confirmModal.message}</p>
+            
+            {/* Admin Code Input */}
+            <div className="space-y-1.5 text-left">
+              <label className="block text-xs font-bold text-gray-500">एक्सेस कोड दर्ज करें (Enter Access Code)</label>
+              <input
+                type="password"
+                value={deleteConfirmCode}
+                onChange={(e) => {
+                  setDeleteConfirmCode(e.target.value);
+                  setDeleteConfirmError('');
+                }}
+                placeholder="एक्सेस कोड"
+                className="w-full px-3 py-2.5 text-sm rounded-xl glass-input font-numbers text-center tracking-widest bg-slate-50 dark:bg-dark-bg/25 border border-gray-200 dark:border-dark-border text-gray-800 dark:text-white"
+              />
+              {deleteConfirmError && (
+                <p className="text-[10px] font-bold text-rose-500 text-center">{deleteConfirmError}</p>
+              )}
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmModal(prev => ({ ...prev, isOpen: false }));
+                  setDeleteConfirmCode('');
+                  setDeleteConfirmError('');
+                }}
+                className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-dark-border dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-bold transition-all cursor-pointer"
+              >
+                रद्द करें (Cancel)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const correctCode = import.meta.env.VITE_ADMIN_CODE || '1900553';
+                  if (deleteConfirmCode !== correctCode) {
+                    setDeleteConfirmError('अमान्य एक्सेस कोड (Invalid Access Code)');
+                    return;
+                  }
+                  confirmModal.onConfirm();
+                  setDeleteConfirmCode('');
+                  setDeleteConfirmError('');
+                }}
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-bold shadow-md transition-all active:scale-95 cursor-pointer"
+              >
+                हाँ, हटाएँ (OK)
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

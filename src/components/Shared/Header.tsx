@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 interface HeaderProps {
   onHomeClick: () => void;
@@ -11,35 +11,14 @@ export const Header: React.FC<HeaderProps> = ({
   mode = 'masjid',
   onCommitteeClick,
 }) => {
-  const [currentBg, setCurrentBg] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentBg((prev) => (prev === 0 ? 1 : 0));
-    }, 6000); // Crossfade background every 6 seconds
-    return () => clearInterval(timer);
-  }, []);
-
-  const bgImages = mode === 'masjid'
-    ? ['/masjidimage.webp', '/masjidimage1.webp']
-    : ['/madrasaimage.png', '/madrasaimage1.png'];
-
   return (
     <header className={`relative overflow-hidden text-white shadow-xl transition-all duration-500 bg-[#052e16] ${mode === 'madrasa' ? 'bg-[#064e3b]' : ''}`}>
-      {/* Background Hero Image Slideshow */}
+      {/* Background Hero Image */}
       {mode === 'masjid' && (
-        <>
-          <div
-            className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${currentBg === 0 ? 'opacity-100' : 'opacity-0'
-              }`}
-            style={{ backgroundImage: `url('${bgImages[0]}')` }}
-          ></div>
-          <div
-            className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${currentBg === 1 ? 'opacity-100' : 'opacity-0'
-              }`}
-            style={{ backgroundImage: `url('${bgImages[1]}')` }}
-          ></div>
-        </>
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0"
+          style={{ backgroundImage: "url('/masjidimage1.webp')" }}
+        ></div>
       )}
 
       {/* Decorative top gold border */}

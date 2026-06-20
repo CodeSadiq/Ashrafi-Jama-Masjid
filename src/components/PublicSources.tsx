@@ -10,14 +10,14 @@ interface PublicSourcesProps {
   onRecordContribution: (id: string, amount: number, date?: string) => Promise<void>;
   onDeleteContribution?: (memberId: string, key: string) => Promise<void>;
   onEditContribution?: (memberId: string, key: string, newAmount: number, date: string, timestamp: number) => Promise<void>;
-  timeFilter?: 'month' | 'year' | 'all';
+  timeFilter?: 'today' | 'month' | 'year' | 'all';
   onAddMember: (name: string, mobile: string, memberType?: 'member' | 'source') => Promise<void>;
 }
 
 export const getMemberTotalContribution = (
   member: Member, 
   mode: 'masjid' | 'madrasa',
-  timeFilter: 'month' | 'year' | 'all' = 'all'
+  timeFilter: 'today' | 'month' | 'year' | 'all' = 'all'
 ): number => {
   let total = 0;
   if (member.contributions) {
@@ -25,6 +25,7 @@ export const getMemberTotalContribution = (
     const currentYear = now.getFullYear().toString();
     const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
     const currentMonthKey = `${currentYear}-${currentMonth}`;
+    const todayKey = now.toISOString().split('T')[0];
 
     Object.entries(member.contributions).forEach(([key, contribution]) => {
       let conMode = 'masjid';
@@ -36,6 +37,8 @@ export const getMemberTotalContribution = (
       }
       if (conMode === mode) {
         if (timeFilter === 'all') {
+          total += (contribution as any).amount || 0;
+        } else if (timeFilter === 'today' && contribution.date === todayKey) {
           total += (contribution as any).amount || 0;
         } else if (timeFilter === 'month' && conMonth === currentMonthKey) {
           total += (contribution as any).amount || 0;
@@ -127,32 +130,47 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
   // Find currently selected member details reactively
   const selectedMember = members.find(m => m.id === selectedMemberId);
 
+  const totalCollectionSum = members.reduce((sum, member) => {
+    return sum + getMemberTotalContribution(member, mode, timeFilter);
+  }, 0);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 mt-6 font-sans">
+    <div className="w-full font-sans">
       <div className="bg-[#059669] dark:bg-emerald-900 border border-emerald-500 rounded-3xl p-5 md:p-6 shadow-md text-white">
-        <div className="flex flex-wrap items-start justify-between gap-4 pb-4 mb-6 border-b border-emerald-500/30">
-          <div className="flex-1 min-w-[200px]">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mb-6 border-b border-emerald-500/30">
+          <div className="flex-1 min-w-[150px]">
+            <h3 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
               <svg className="w-5 h-5 text-amber-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               सहयोगी सदस्य / स्रोत सूची
             </h3>
-            <p className="text-xs text-emerald-100 mt-1.5 font-medium">
-              {mode === 'masjid' ? 'मस्जिद' : 'मदरसा'} के विकास व सहयोग के लिए जुड़े सदस्यों की {timeFilter === 'month' ? 'इस महीने की' : timeFilter === 'year' ? 'इस साल की' : 'कुल'} सहयोग सूची
+            <p className="text-[10px] md:text-xs text-emerald-100 mt-1 font-medium">
+              {mode === 'masjid' ? 'मस्जिद' : 'मदरसा'} के विकास व सहयोग के लिए जुड़े सदस्यों की {timeFilter === 'today' ? 'आज की' : timeFilter === 'month' ? 'इस महीने की' : timeFilter === 'year' ? 'इस साल की' : 'कुल'} सहयोग सूची
             </p>
           </div>
           
-          {/* Khatabook-style dynamic "+" Add Button for Admin */}
-          {isAdmin && (
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center justify-center w-10 h-10 bg-islamic-green hover:bg-islamic-green-hover text-white rounded-full shadow-md active:scale-95 transition-transform"
-              title="नया सहयोगी जोड़ें"
-            >
-              <span className="text-2xl font-bold font-sans">+</span>
-            </button>
-          )}
+          <div className="flex items-center gap-4">
+            <div className="text-right shrink-0">
+              <span className="text-xs md:text-sm text-emerald-100/90 font-bold block uppercase">
+                {timeFilter === 'today' ? 'आज का जमा' : timeFilter === 'month' ? 'इस महीने का जमा' : timeFilter === 'year' ? 'इस साल का जमा' : 'कुल जमा'}
+              </span>
+              <span className="text-xl md:text-2xl font-black text-amber-300 font-numbers">
+                ₹{totalCollectionSum.toLocaleString('en-IN')}
+              </span>
+            </div>
+
+            {/* Khatabook-style dynamic "+" Add Button for Admin */}
+            {isAdmin && (
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center justify-center w-10 h-10 bg-islamic-green hover:bg-islamic-green-hover text-white rounded-full shadow-md active:scale-95 transition-transform"
+                title="नया सहयोगी जोड़ें"
+              >
+                <span className="text-2xl font-bold font-sans">+</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {loading ? (
@@ -429,7 +447,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
             </button>
 
             {/* Modal Header */}
-            <div className="p-6 border-b border-gray-100 dark:border-dark-border/50">
+            <div className="p-4 md:p-6 border-b border-gray-100 dark:border-dark-border/50">
               <h3 className="text-xl font-bold text-gray-800 dark:text-emerald-100 flex items-center gap-2">
                 <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -582,7 +600,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
             </div>
 
             {/* Total Section */}
-            <div className="bg-slate-50 dark:bg-dark-bg/40 p-5 border-t border-gray-100 dark:border-dark-border/50 flex justify-between items-center">
+            <div className="bg-slate-50 dark:bg-dark-bg/40 p-4 md:p-5 border-t border-gray-100 dark:border-dark-border/50 flex justify-between items-center">
               <span className="text-sm font-bold text-gray-600 dark:text-gray-400">कुल सहयोग:</span>
               <span className="font-numbers font-extrabold text-islamic-green dark:text-emerald-400 text-xl">
                 ₹{getMemberTotalContribution(selectedMember, mode).toLocaleString('en-IN')}
@@ -591,7 +609,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
 
             {/* Admin Add Contribution Form at Bottom */}
             {isAdmin && (
-              <div className="p-6 border-t border-gray-100 dark:border-dark-border/50 bg-emerald-50/5 dark:bg-emerald-950/5">
+              <div className="p-4 md:p-6 border-t border-gray-100 dark:border-dark-border/50 bg-emerald-50/5 dark:bg-emerald-950/5">
                 <div className="flex items-center gap-2.5">
                   <input
                     type="number"

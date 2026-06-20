@@ -73,7 +73,7 @@ export const Footer: React.FC<FooterProps> = ({
                     <circle cx="12" cy="12" r="10" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
-                  <span>{isAdmin ? 'यूज़र व्यू' : 'एडमिन व्यू'}</span>
+                  <span>{isAdmin ? 'Admin Mode' : 'User Mode'}</span>
                 </button>
               )}
 
