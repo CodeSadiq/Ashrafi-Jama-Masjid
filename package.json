@@ -7,6 +7,7 @@
     "server": "nodemon server.cjs",
     "dev": "concurrently \"npm run server\" \"vite\"",
     "build": "tsc -b && vite build",
+    "start": "node server.cjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

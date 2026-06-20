@@ -1,11 +1,15 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Support base64 image uploads
+
+// Serve static files from Vite build
+app.use(express.static(path.join(__dirname, 'dist')));
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const PORT = process.env.PORT || 5000;
@@ -549,6 +553,11 @@ app.post('/api/notifications/clear', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Fallback for SPA routing (React Router) - serve index.html for all other non-API routes
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start server
