@@ -594,6 +594,64 @@ export const App: React.FC = () => {
             />
           </div>
 
+          {/* User-only Account & Donation Info Section */}
+          {!isAdminMode && (
+            <div className="max-w-7xl mx-auto px-4 mt-8">
+              <div className="bg-white dark:bg-dark-card border border-emerald-500/20 dark:border-emerald-500/10 rounded-3xl p-6 shadow-md text-center space-y-4 max-w-2xl mx-auto">
+                <div className="flex flex-col items-center">
+                  <span className="px-3 py-1 bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-bold rounded-full uppercase tracking-wider">
+                    सेक्रेट्री (Secretary)
+                  </span>
+                  <h4 className="text-lg font-black text-gray-800 dark:text-emerald-100 mt-2">
+                    नकी इमाम साहब
+                  </h4>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                    संपर्क: <a href="tel:8051376767" className="font-numbers font-bold hover:underline">8051376767</a>
+                  </p>
+                </div>
+
+                <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto"></div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center pt-2">
+                  {/* QR Code Container */}
+                  <div className="flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-dark-bg/25 border border-dashed border-gray-200 dark:border-dark-border rounded-2xl h-44">
+                    <svg className="w-10 h-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-4v-4m-4 10h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-xs font-bold text-gray-400">QR कोड (QR Code)</span>
+                    <span className="text-[10px] font-semibold text-gray-400/80 mt-1 italic">(currently unavailable)</span>
+                  </div>
+
+                  {/* Bank Account Details */}
+                  <div className="flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-dark-bg/25 border border-dashed border-gray-200 dark:border-dark-border rounded-2xl h-44 text-gray-400">
+                    <svg className="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <span className="text-xs font-bold">बैंक खाता विवरण (Bank Details)</span>
+                    <span className="text-[10px] font-semibold text-gray-400/80 mt-1 italic">(currently unavailable)</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <p className="text-sm font-bold text-emerald-800 dark:text-emerald-400 italic">
+                    "{mode === 'masjid' ? 'मस्जिद' : 'मदरसा'} सहयोग राशि/दान इस अकाउंट में डालें और व्हाट्सएप पर विवरण (नाम व रकम) लिखकर भेजें"
+                  </p>
+                  <a
+                    href="https://wa.me/918051376767"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 mt-3 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.73-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.863-9.858.002-2.634-1.023-5.11-2.885-6.974C16.587 1.91 14.113.886 11.48 1.884c-5.443 0-9.87 4.42-9.873 9.863-.001 1.73.476 3.42 1.38 4.93L1.93 21.053l4.717-1.236-.001-.001zM17.472 14.382c-.3-.149-1.777-.878-2.046-.977-.269-.099-.465-.149-.661.149-.197.297-.76.76-.931.957-.171.197-.341.221-.641.073-.3-.149-1.267-.467-2.414-1.491-.892-.796-1.493-1.78-1.668-2.079-.175-.3-.018-.463.131-.611.135-.133.3-.347.45-.52.149-.174.199-.298.299-.497.1-.2.05-.374-.025-.523-.075-.149-.662-1.597-.907-2.185-.238-.572-.48-.495-.66-.503-.171-.008-.367-.01-.563-.01-.196 0-.517.074-.787.374-.27.299-1.03 1.008-1.03 2.46s1.056 2.846 1.203 3.045c.149.2 2.078 3.177 5.034 4.455.703.304 1.253.486 1.681.622.709.226 1.354.194 1.864.118.568-.084 1.777-.726 2.026-1.428.249-.703.249-1.306.175-1.428-.075-.124-.269-.199-.569-.348z"/>
+                    </svg>
+                    <span>व्हाट्सएप पर संदेश भेजें (WhatsApp: 8051376767)</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Admin Reports Panel */}
           {isAdminMode && (
             <div className="max-w-7xl mx-auto px-4 mt-2">

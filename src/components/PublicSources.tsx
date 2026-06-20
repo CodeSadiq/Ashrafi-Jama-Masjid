@@ -448,7 +448,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
 
             {/* Modal Header */}
             <div className="p-4 md:p-6 border-b border-gray-100 dark:border-dark-border/50">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-emerald-100 flex items-center gap-2">
+              <h3 className="text-base md:text-xl font-bold text-gray-800 dark:text-emerald-100 flex items-center gap-2">
                 <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
@@ -610,17 +610,17 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
             {/* Admin Add Contribution Form at Bottom */}
             {isAdmin && (
               <div className="p-4 md:p-6 border-t border-gray-100 dark:border-dark-border/50 bg-emerald-50/5 dark:bg-emerald-950/5">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <input
                     type="number"
                     value={paymentInputs[selectedMember.id] || ''}
                     onChange={(e) => setPaymentInputs(prev => ({ ...prev, [selectedMember.id]: e.target.value }))}
                     placeholder="सहयोग राशि ₹ दर्ज करें"
-                    className="flex-grow min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/5 bg-white dark:bg-dark-bg text-xs sm:text-sm font-semibold font-numbers text-center focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:bg-white"
+                    className="w-full sm:flex-grow min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/5 bg-white dark:bg-dark-bg text-xs sm:text-sm font-semibold font-numbers text-center focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:bg-white"
                   />
                   <button
                     onClick={() => handlePaymentSubmit(selectedMember.id)}
-                    className="px-4 py-2.5 bg-islamic-green hover:bg-islamic-green-hover text-white rounded-xl text-xs sm:text-sm font-bold transition-all active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
+                    className="w-full sm:w-auto px-4 py-2.5 bg-islamic-green hover:bg-islamic-green-hover text-white rounded-xl text-xs sm:text-sm font-bold transition-all active:scale-95 cursor-pointer whitespace-nowrap shrink-0 flex items-center justify-center"
                   >
                     जमा करें
                   </button>
