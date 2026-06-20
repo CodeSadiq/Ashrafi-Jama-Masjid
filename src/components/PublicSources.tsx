@@ -179,7 +179,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
             <div className="h-10 bg-gray-100 dark:bg-dark-bg animate-pulse rounded-xl"></div>
             <div className="h-10 bg-gray-100 dark:bg-dark-bg animate-pulse rounded-xl"></div>
           </div>
-        ) : sortedMembers.length === 0 ? (
+        ) : allSortedMembers.length === 0 ? (
           <div className="text-center py-8 text-gray-400 dark:text-gray-500 text-sm font-semibold">
             अभी तक कोई सदस्य पंजीकृत नहीं है।
           </div>
