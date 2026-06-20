@@ -556,7 +556,7 @@ app.post('/api/notifications/clear', async (req, res) => {
 });
 
 // Fallback for SPA routing (React Router) - serve index.html for all other non-API routes
-app.get('/*', (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
