@@ -181,6 +181,18 @@ export const App: React.FC = () => {
     fetchDashboardData();
   }, [dbInitialized, mode]);
 
+  // Prevent background scrolling when modals are open
+  useEffect(() => {
+    if (showCommitteeModal || showLoginModal) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [showCommitteeModal, showLoginModal]);
+
   // Auth Handlers
   const handleAdminClick = async () => {
     if (isLoggedIn) {

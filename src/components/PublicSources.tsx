@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Member } from '../db';
 
 interface PublicSourcesProps {
@@ -69,6 +69,18 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
   
   // Track selected member for Khatabook ledger modal view
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+
+  // Prevent background scrolling when modals are open
+  useEffect(() => {
+    if (showAddModal || selectedMemberId !== null) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [showAddModal, selectedMemberId]);
   
   // States for inline editing of contribution entries
   const [editingContributionKey, setEditingContributionKey] = useState<string | null>(null);
