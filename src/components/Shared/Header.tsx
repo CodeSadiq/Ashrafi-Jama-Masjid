@@ -37,18 +37,22 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="relative overflow-hidden text-white shadow-xl transition-colors duration-300">
       {/* Background Hero Image Slideshow */}
-      <div 
-        className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${
-          currentBg === 0 ? 'opacity-100' : 'opacity-0'
-        }`} 
-        style={{ backgroundImage: `url('${bgImages[0]}')` }}
-      ></div>
-      <div 
-        className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${
-          currentBg === 1 ? 'opacity-100' : 'opacity-0'
-        }`} 
-        style={{ backgroundImage: `url('${bgImages[1]}')` }}
-      ></div>
+      {mode === 'masjid' && (
+        <>
+          <div 
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${
+              currentBg === 0 ? 'opacity-100' : 'opacity-0'
+            }`} 
+            style={{ backgroundImage: `url('${bgImages[0]}')` }}
+          ></div>
+          <div 
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${
+              currentBg === 1 ? 'opacity-100' : 'opacity-0'
+            }`} 
+            style={{ backgroundImage: `url('${bgImages[1]}')` }}
+          ></div>
+        </>
+      )}
 
       {/* Premium Dark Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#042d17]/50 via-[#042d17]/60 to-[#032211]/70 z-0"></div>
@@ -59,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Repeating background pattern */}
       <div className="absolute inset-0 bg-mosque-pattern opacity-5 pointer-events-none z-0"></div>
 
-      <div className="container mx-auto px-4 py-6 relative z-10 flex flex-col items-center justify-between min-h-[240px] md:min-h-[260px]">
+      <div className="container mx-auto px-4 py-6 relative z-10 flex flex-col items-center justify-between min-h-[280px] md:min-h-[300px]">
         {/* Top bar with buttons */}
         <div className="w-full flex justify-end items-center">
           {/* Action controls */}
