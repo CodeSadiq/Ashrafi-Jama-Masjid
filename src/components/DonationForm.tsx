@@ -183,7 +183,7 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="उदा. अहमद ख़ान"
+                placeholder="जैसे: अहमद ख़ान"
                 className="w-full px-4 py-3 rounded-xl text-sm glass-input"
                 required
               />
@@ -198,7 +198,7 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
                 type="tel"
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value.replace(/[^0-9]/g, ''))}
-                placeholder="उदा. 9876543210"
+                placeholder="जैसे: 9876543210"
                 maxLength={10}
                 className="w-full px-4 py-3 rounded-xl text-sm font-numbers glass-input"
                 required
@@ -216,7 +216,7 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="उदा. 1000"
+                  placeholder="जैसे: 1000"
                   min={1}
                   className="w-full pl-9 pr-4 py-3 rounded-xl text-sm font-numbers glass-input"
                   required

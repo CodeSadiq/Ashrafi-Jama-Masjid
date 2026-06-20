@@ -305,7 +305,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               type="text"
               value={sourceForm.name}
               onChange={(e) => setSourceForm(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="उदा. सादिक खान"
+              placeholder="जैसे: सादिक खान"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input"
               required
             />
@@ -316,7 +316,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               type="tel"
               value={sourceForm.mobile}
               onChange={(e) => setSourceForm(prev => ({ ...prev, mobile: e.target.value.replace(/[^0-9]/g, '') }))}
-              placeholder="उदा. 9876543210"
+              placeholder="जैसे: 9876543210"
               maxLength={10}
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input font-numbers"
               required
@@ -341,7 +341,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               type="number"
               value={expenseForm.amount}
               onChange={(e) => setExpenseForm(prev => ({ ...prev, amount: e.target.value }))}
-              placeholder="उदा. 500"
+              placeholder="जैसे: 500"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input font-numbers"
               required
             />
@@ -352,7 +352,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               type="text"
               value={expenseForm.purpose}
               onChange={(e) => setExpenseForm(prev => ({ ...prev, purpose: e.target.value }))}
-              placeholder="उदा. बिजली बिल, मरम्मत कार्य, आदि"
+              placeholder="जैसे: बिजली बिल, मरम्मत कार्य, आदि"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input"
               required
             />

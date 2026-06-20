@@ -282,7 +282,7 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
               type="number"
               value={expenseForm.amount}
               onChange={(e) => setExpenseForm(prev => ({ ...prev, amount: e.target.value }))}
-              placeholder="उदा. 500"
+              placeholder="जैसे: 500"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input font-numbers"
               required
             />

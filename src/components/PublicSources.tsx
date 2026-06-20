@@ -687,7 +687,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
                 type="text"
                 value={newMemberName}
                 onChange={(e) => setNewMemberName(e.target.value)}
-                placeholder={newMemberType === 'source' ? "उदा. जुमा कलेक्शन" : "उदा. सादिक खान"}
+                placeholder={newMemberType === 'source' ? "जैसे: जुमा कलेक्शन" : "जैसे: सादिक खान"}
                 className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input"
                 required
               />
@@ -700,7 +700,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
                   type="tel"
                   value={newMemberMobile}
                   onChange={(e) => setNewMemberMobile(e.target.value.replace(/[^0-9]/g, ''))}
-                  placeholder="उदा. 8951214641"
+                  placeholder="जैसे: 8951214641"
                   maxLength={10}
                   className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input font-numbers"
                   required
