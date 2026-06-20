@@ -57,9 +57,21 @@ async function connectDB() {
 
   } catch (error) {
     console.error('Failed to connect to MongoDB:', error);
-    process.exit(1);
+    throw error;
   }
 }
+
+// Database Connection Middleware for Serverless/Vercel
+app.use(async (req, res, next) => {
+  try {
+    if (!db) {
+      await connectDB();
+    }
+    next();
+  } catch (err) {
+    res.status(500).json({ error: 'Database connection failed: ' + err.message });
+  }
+});
 
 // REST API Endpoints
 
@@ -560,8 +572,16 @@ app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Start server
-app.listen(PORT, async () => {
-  console.log(`Server running on port ${PORT}`);
-  await connectDB();
-});
+// Start server (only if not running on Vercel as a Serverless function)
+if (!process.env.VERCEL) {
+  app.listen(PORT, async () => {
+    console.log(`Server running on port ${PORT}`);
+    try {
+      await connectDB();
+    } catch (err) {
+      console.error('Failed initial MongoDB connection:', err);
+    }
+  });
+}
+
+module.exports = app;
