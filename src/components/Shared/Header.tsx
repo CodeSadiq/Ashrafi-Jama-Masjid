@@ -1,23 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
 interface HeaderProps {
-  isLoggedIn: boolean;
-  isAdmin: boolean;
-  onAdminClick: () => void;
-  onToggleViewClick: () => void;
   onHomeClick: () => void;
-  hasNotifications?: boolean;
   mode?: 'masjid' | 'madrasa';
   onCommitteeClick?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  isLoggedIn,
-  isAdmin,
-  onAdminClick,
-  onToggleViewClick,
   onHomeClick,
-  hasNotifications = false,
   mode = 'masjid',
   onCommitteeClick,
 }) => {
@@ -35,27 +25,22 @@ export const Header: React.FC<HeaderProps> = ({
     : ['/madrasaimage.png', '/madrasaimage1.png'];
 
   return (
-    <header className="relative overflow-hidden text-white shadow-xl transition-colors duration-300">
+    <header className={`relative overflow-hidden text-white shadow-xl transition-all duration-500 bg-[#052e16] ${mode === 'madrasa' ? 'bg-[#064e3b]' : ''}`}>
       {/* Background Hero Image Slideshow */}
       {mode === 'masjid' && (
         <>
-          <div 
-            className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${
-              currentBg === 0 ? 'opacity-100' : 'opacity-0'
-            }`} 
+          <div
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${currentBg === 0 ? 'opacity-100' : 'opacity-0'
+              }`}
             style={{ backgroundImage: `url('${bgImages[0]}')` }}
           ></div>
-          <div 
-            className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${
-              currentBg === 1 ? 'opacity-100' : 'opacity-0'
-            }`} 
+          <div
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-1000 ${currentBg === 1 ? 'opacity-100' : 'opacity-0'
+              }`}
             style={{ backgroundImage: `url('${bgImages[1]}')` }}
           ></div>
         </>
       )}
-
-      {/* Premium Dark Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#042d17]/50 via-[#042d17]/60 to-[#032211]/70 z-0"></div>
 
       {/* Decorative top gold border */}
       <div className="h-1.5 w-full bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 relative z-10"></div>
@@ -63,87 +48,53 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Repeating background pattern */}
       <div className="absolute inset-0 bg-mosque-pattern opacity-5 pointer-events-none z-0"></div>
 
-      <div className="container mx-auto px-4 py-4 relative z-10 flex flex-col items-center justify-center gap-4">
-        {/* Top bar with buttons */}
-        <div className="w-full flex justify-end items-center">
-          {/* Action controls */}
-          <div className="flex items-center gap-3">
-            {isLoggedIn ? (
-              <>
-                {/* View toggle (Admin view vs User view) */}
-                <button
-                  onClick={onToggleViewClick}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold border transition-all active:scale-95 cursor-pointer ${
-                    isAdmin
-                      ? 'bg-amber-600 text-white border-amber-500 hover:bg-amber-700'
-                      : 'bg-emerald-600 text-white border-emerald-500 hover:bg-emerald-700'
-                  }`}
-                >
-                  <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <circle cx="12" cy="12" r="10" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                  <span>{isAdmin ? 'यूज़र व्यू' : 'एडमिन व्यू'}</span>
-                </button>
+      <div className="container mx-auto px-4 py-4 relative z-10 flex flex-col items-center justify-center gap-2 h-[270px] md:h-[290px]">
+        {/* Title and Islamic motifs wrapped in a simple, highly transparent container so the background image is fully visible */}
+        <div className="text-center flex flex-col items-center justify-center max-w-2xl mx-auto w-full bg-black/15 py-4 px-6 rounded-2xl border border-white/5 shadow-md relative overflow-hidden">
+          {/* Subtle background glow */}
+          <div className="absolute -top-12 -left-12 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-                {/* Logout button */}
-                <button
-                  onClick={onAdminClick}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold border border-rose-500/30 bg-rose-600/10 text-rose-200 hover:bg-rose-600 hover:text-white transition-all active:scale-95 cursor-pointer"
-                >
-                  <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                  <span>लॉगआउट</span>
-                </button>
-              </>
-            ) : (
-              /* Admin login button when logged out */
-              <button
-                onClick={onAdminClick}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border bg-white/10 text-white/90 border-white/10 hover:bg-white/20 transition-all active:scale-95 cursor-pointer"
-              >
-                <div className="relative">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 13c0 5-3.5 7.5-7.66 9.7a1 1 0 0 1-.68 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 .76-.97l8-2a1 1 0 0 1 .48 0l8 2A1 1 0 0 1 20 6z" />
-                  </svg>
-                  {hasNotifications && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full animate-pulse"></span>
-                  )}
-                </div>
-                <span>एडमिन लॉगिन</span>
-              </button>
-            )}
-          </div>
-        </div>
+          {/* Top Star Motif */}
+          {mode === 'masjid' && (
+            <div className="text-amber-400 text-lg mb-1 select-none font-bold">
+              ۞
+            </div>
+          )}
 
-
-        {/* Title and Islamic motifs wrapped in a simple, compact glass card */}
-        <div className="text-center flex flex-col items-center max-w-2xl mx-auto w-full bg-white/5 dark:bg-black/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-5 shadow-lg">
-          <h1 
-            className="cursor-pointer flex flex-col items-center gap-1 text-center select-none" 
+          <h1
+            className="cursor-pointer flex flex-col items-center gap-1 text-center select-none"
             onClick={onHomeClick}
           >
-            <span className="text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wide drop-shadow-md text-amber-300">
+            <span className="text-2xl md:text-3xl font-extrabold tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] bg-gradient-to-b from-amber-200 via-amber-300 to-amber-500 bg-clip-text text-transparent">
               {mode === 'masjid' ? 'अशरफ़ी जामा मस्जिद' : 'मदरसा गौसिया रिजविया रेयायतुल ऊलूम'}
             </span>
-            <span className="text-[10px] md:text-xs font-semibold text-white/80 mt-1">
-              छोटी लकड़ी, लकड़ी नबीगंज, सीवान, बिहार - 841447
+            <span className="flex items-center gap-1 text-[10px] md:text-xs font-semibold text-white/95 mt-1 bg-white/10 px-3 py-0.5 rounded-full border border-white/5 shadow-inner">
+              <svg className="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>छोटी लकड़ी, लकड़ी नबीगंज, सीवान, बिहार - 841447</span>
             </span>
           </h1>
 
-          <div className="h-[1px] w-16 bg-amber-400/20 my-2"></div>
+          {/* Elegant Divider */}
+          <div className="flex items-center gap-2 w-full max-w-xs my-2.5">
+            <div className="h-[1px] flex-grow bg-gradient-to-r from-transparent to-amber-400/40"></div>
+            <span className="text-amber-400 text-[10px]">✦</span>
+            <div className="h-[1px] flex-grow bg-gradient-to-l from-transparent to-amber-400/40"></div>
+          </div>
 
-          <p className="max-w-lg text-xs md:text-sm font-medium text-emerald-100 italic drop-shadow-sm px-4">
+          <p className="max-w-lg text-xs md:text-sm font-semibold text-emerald-100 italic drop-shadow-sm px-4">
             {mode === 'masjid'
-              ? '"अल्लाह के घर (मस्जिद) के लिए आपका तआवुन हमारे लिए क़ीमती है"'
-              : '"दीन की तालीम (मदरसा) के लिए आपका तआवुन हमारे लिए क़ीमती है"'}
+              ? '“अल्लाह के घर (मस्जिद) के लिए आपका तआवुन हमारे लिए क़ीमती है”'
+              : '“दीन की तालीम (मदरसा) के लिए आपका तआवुन हमारे लिए क़ीमती है”'}
           </p>
 
           {onCommitteeClick && (
             <button
               onClick={onCommitteeClick}
-              className="mt-3 flex items-center gap-1.5 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-emerald-950 rounded-full text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer border border-amber-400"
+              className="mt-3.5 flex items-center gap-1.5 px-4.5 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-emerald-950 rounded-full text-xs font-bold shadow-lg hover:shadow-amber-500/25 hover:scale-[1.02] transition-all active:scale-95 cursor-pointer border border-amber-400/40"
             >
               <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -156,4 +107,3 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
-

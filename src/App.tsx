@@ -412,12 +412,7 @@ export const App: React.FC = () => {
 
       {/* Header component */}
       <Header
-        isLoggedIn={isLoggedIn}
-        isAdmin={isAdminMode}
-        onAdminClick={handleAdminClick}
-        onToggleViewClick={handleToggleViewClick}
         onHomeClick={handleHomeClick}
-        hasNotifications={hasUnreadNotes}
         mode={mode}
         onCommitteeClick={() => setShowCommitteeModal(true)}
       />
@@ -519,7 +514,13 @@ export const App: React.FC = () => {
       </main>
 
       {/* Footer component */}
-      <Footer />
+      <Footer
+        isLoggedIn={isLoggedIn}
+        isAdmin={isAdminMode}
+        onAdminClick={handleAdminClick}
+        onToggleViewClick={handleToggleViewClick}
+        hasNotifications={hasUnreadNotes}
+      />
 
       {/* Slide-in toast alerts notifications */}
       {toast && (
