@@ -48,34 +48,7 @@ export const getMemberTotalContribution = (
   return total;
 };
 
-const renderRankBadge = (rank: number) => {
-  if (rank === 1) {
-    return (
-      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white font-extrabold text-xs shadow-sm font-numbers" title="पहला स्थान">
-        1
-      </span>
-    );
-  }
-  if (rank === 2) {
-    return (
-      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-400 text-white font-extrabold text-xs shadow-sm font-numbers" title="दूसरा स्थान">
-        2
-      </span>
-    );
-  }
-  if (rank === 3) {
-    return (
-      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-700 text-white font-extrabold text-xs shadow-sm font-numbers" title="तीसरा स्थान">
-        3
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-dark-mint text-gray-500 dark:text-gray-400 font-bold text-xs font-numbers">
-      {rank}
-    </span>
-  );
-};
+
 
 export const PublicSources: React.FC<PublicSourcesProps> = ({ 
   members, 
@@ -115,8 +88,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMemberName) return;
-    if (newMemberType === 'member' && !newMemberMobile) return;
-    await onAddMember(newMemberName, newMemberType === 'member' ? newMemberMobile : '', newMemberType);
+    await onAddMember(newMemberName, newMemberMobile, newMemberType);
     setNewMemberName('');
     setNewMemberMobile('');
     setNewMemberType('member');
@@ -145,17 +117,16 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 mt-6 font-sans">
-      <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-3xl p-5 md:p-6 shadow-sm">
-        {/* Header with Add Button */}
-        <div className="flex flex-wrap items-start justify-between gap-4 pb-4 mb-6 border-b border-gray-100 dark:border-dark-border">
+      <div className="bg-[#059669] dark:bg-emerald-900 border border-emerald-500 rounded-3xl p-5 md:p-6 shadow-md text-white">
+        <div className="flex flex-wrap items-start justify-between gap-4 pb-4 mb-6 border-b border-emerald-500/30">
           <div className="flex-1 min-w-[200px]">
-            <h3 className="text-lg font-bold text-gray-800 dark:text-emerald-100 flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <svg className="w-5 h-5 text-amber-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               सहयोगी सदस्य / स्रोत सूची
             </h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">
+            <p className="text-xs text-emerald-100 mt-1.5 font-medium">
               {mode === 'masjid' ? 'मस्जिद' : 'मदरसा'} के विकास व सहयोग के लिए जुड़े सदस्यों की {timeFilter === 'month' ? 'इस महीने की' : timeFilter === 'year' ? 'इस साल की' : 'कुल'} सहयोग सूची
             </p>
           </div>
@@ -184,16 +155,15 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
           </div>
         ) : (
           <>
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto no-scrollbar">
+            <div className="hidden md:block max-h-[550px] overflow-y-auto overflow-x-auto no-scrollbar pr-1">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-gray-100 dark:border-dark-border/50 text-xs font-bold text-gray-400 dark:text-gray-500">
-                    <th className="py-3 px-4 text-center w-16">रैंक</th>
-                    <th className="py-3 px-4">नाम</th>
-                    <th className="py-3 px-4 text-right">कुल सहयोग</th>
-                    <th className="py-3 px-4 text-center">विवरण</th>
-                    {isAdmin && <th className="py-3 px-4 text-center">हटाएं</th>}
+                  <tr className="sticky top-0 bg-white dark:bg-dark-card border-b border-gray-100 dark:border-dark-border/50 text-xs font-bold text-gray-400 dark:text-gray-500 z-10">
+                    <th className="py-3 px-4 text-center w-16 bg-white dark:bg-dark-card">क्र.सं.</th>
+                    <th className="py-3 px-4 bg-white dark:bg-dark-card">नाम</th>
+                    <th className="py-3 px-4 text-right bg-white dark:bg-dark-card">कुल जमा</th>
+                    <th className="py-3 px-4 text-center bg-white dark:bg-dark-card">विवरण</th>
+                    {isAdmin && <th className="py-3 px-4 text-center bg-white dark:bg-dark-card">हटाएं</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-dark-border/30 text-sm">
@@ -245,20 +215,20 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
                     const totalContribution = getMemberTotalContribution(member, mode, timeFilter);
                     return (
                       <tr key={member.id} className="hover:bg-emerald-50/10 dark:hover:bg-emerald-950/5 transition-colors">
-                        <td className="py-4 px-4 text-center">
-                          {renderRankBadge(idx + 1)}
+                        <td className="py-4 px-4 text-center font-numbers text-emerald-100 dark:text-emerald-300 font-bold">
+                          {idx + 1}
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex flex-col">
-                            <span className="font-bold text-gray-700 dark:text-emerald-100 text-base">
+                            <span className="font-bold text-white dark:text-emerald-50 text-base">
                               {member.name}
                             </span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500 font-numbers mt-0.5">
+                            <span className="text-xs text-emerald-100/80 dark:text-emerald-300/80 font-numbers mt-0.5">
                               {member.mobile}
                             </span>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-right font-numbers font-extrabold text-islamic-green dark:text-emerald-400 text-base">
+                        <td className="py-4 px-4 text-right font-numbers font-extrabold text-white dark:text-emerald-50 text-base">
                           ₹{totalContribution.toLocaleString('en-IN')}
                         </td>
                         <td className="py-4 px-4 text-center">
@@ -293,16 +263,16 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
             </div>
 
             {/* Mobile Cards View - Overflow Free */}
-            <div className="md:hidden space-y-4">
+            <div className="md:hidden space-y-2.5 max-h-[550px] overflow-y-auto pr-1">
               {sourcesList.map((member) => {
                 const totalContribution = getMemberTotalContribution(member, mode, timeFilter);
                 return (
                   <div 
                     key={member.id} 
                     onClick={() => !isAdmin && setSelectedMemberId(member.id)}
-                    className={`p-4 bg-amber-50/30 dark:bg-amber-900/10 border border-amber-100/50 dark:border-amber-500/10 rounded-2xl shadow-sm ${
+                    className={`p-3 bg-white dark:bg-dark-card border border-gray-200/50 dark:border-dark-border rounded-2xl shadow-sm ${
                       !isAdmin 
-                        ? 'cursor-pointer hover:bg-amber-50/50 dark:hover:bg-amber-900/20 transition-colors' 
+                        ? 'cursor-pointer hover:bg-gray-50/50 dark:hover:bg-dark-bg/30 transition-colors' 
                         : 'space-y-3'
                     }`}
                   >
@@ -318,7 +288,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
                       <div className="flex items-center gap-3 shrink-0">
                         <div className="text-right">
                           <span className="text-[10px] text-amber-600/70 dark:text-amber-400/70 font-semibold block uppercase">
-                            कुल सहयोग
+                            कुल जमा
                           </span>
                           <span className="font-numbers font-extrabold text-amber-600 dark:text-amber-400 text-base">
                             ₹{totalContribution.toLocaleString('en-IN')}
@@ -357,13 +327,13 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
                   </div>
                 );
               })}
-              {sortedMembers.map((member, idx) => {
+              {sortedMembers.map((member) => {
                 const totalContribution = getMemberTotalContribution(member, mode, timeFilter);
                 return (
                   <div 
                     key={member.id} 
                     onClick={() => !isAdmin && setSelectedMemberId(member.id)}
-                    className={`p-4 bg-white dark:bg-dark-card border border-gray-100/50 dark:border-white/5 rounded-2xl shadow-sm ${
+                    className={`p-3 bg-white dark:bg-dark-card border border-gray-200/50 dark:border-dark-border rounded-2xl shadow-sm ${
                       !isAdmin 
                         ? 'cursor-pointer hover:bg-gray-50/50 dark:hover:bg-dark-bg/30 transition-colors' 
                         : 'space-y-3'
@@ -371,7 +341,9 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
                   >
                     <div className="flex justify-between items-center gap-2">
                       <div className="flex items-center gap-3">
-                        {renderRankBadge(idx + 1)}
+                        <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-islamic-green dark:text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">
+                          👤
+                        </div>
                         <div>
                           <h4 className="font-bold text-gray-800 dark:text-emerald-100 text-base">
                             {member.name}
@@ -384,7 +356,7 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
                       <div className="flex items-center gap-3 shrink-0">
                         <div className="text-right">
                           <span className="text-[10px] text-gray-400 dark:text-gray-500 font-semibold block uppercase">
-                            कुल सहयोग
+                            कुल जमा
                           </span>
                           <span className="font-numbers font-extrabold text-islamic-green dark:text-emerald-400 text-base">
                             ₹{totalContribution.toLocaleString('en-IN')}
@@ -681,21 +653,20 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-gray-500 mb-1">
-                {newMemberType === 'source' ? 'स्रोत का नाम *' : 'सहयोगी का नाम *'}
+                {newMemberType === 'source' ? 'स्रोत का नाम' : 'सहयोगी का नाम'}
               </label>
               <input
                 type="text"
                 value={newMemberName}
                 onChange={(e) => setNewMemberName(e.target.value)}
-                placeholder={newMemberType === 'source' ? "जैसे: जुमा कलेक्शन" : "जैसे: सादिक खान"}
+                placeholder={newMemberType === 'source' ? "जैसे: जुमा कलेक्शन" : "जैसे: सादिक इमाम"}
                 className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input"
-                required
               />
             </div>
             
             {newMemberType === 'member' && (
               <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1">मोबाइल नंबर *</label>
+                <label className="block text-xs font-bold text-gray-500 mb-1">मोबाइल नंबर</label>
                 <input
                   type="tel"
                   value={newMemberMobile}
@@ -703,7 +674,6 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
                   placeholder="जैसे: 8951214641"
                   maxLength={10}
                   className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input font-numbers"
-                  required
                 />
               </div>
             )}

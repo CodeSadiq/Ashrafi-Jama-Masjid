@@ -38,18 +38,13 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !mobile || !amount || !screenshot) {
-      alert('कृपया सभी फ़ील्ड भरें और स्क्रीनशॉट अपलोड करें।');
-      return;
-    }
-
     setSubmitting(true);
     try {
       await onSubmit({
-        name,
-        mobile,
-        amount: parseFloat(amount),
-        screenshotUrl: screenshot
+        name: name.trim() || 'अनाम दानकर्ता',
+        mobile: mobile.trim() || '—',
+        amount: parseFloat(amount) || 0,
+        screenshotUrl: screenshot || ''
       });
       // Clear form
       setName('');
@@ -177,7 +172,7 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
             {/* Input Name */}
             <div>
               <label className="block text-sm font-bold text-gray-700 dark:text-emerald-100 mb-1.5">
-                दाता का नाम <span className="text-rose-500">*</span>
+                दाता का नाम
               </label>
               <input
                 type="text"
@@ -185,14 +180,13 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
                 onChange={(e) => setName(e.target.value)}
                 placeholder="जैसे: अहमद ख़ान"
                 className="w-full px-4 py-3 rounded-xl text-sm glass-input"
-                required
               />
             </div>
 
             {/* Input Mobile */}
             <div>
               <label className="block text-sm font-bold text-gray-700 dark:text-emerald-100 mb-1.5">
-                मोबाइल नंबर <span className="text-rose-500">*</span>
+                मोबाइल नंबर
               </label>
               <input
                 type="tel"
@@ -201,14 +195,13 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
                 placeholder="जैसे: 9876543210"
                 maxLength={10}
                 className="w-full px-4 py-3 rounded-xl text-sm font-numbers glass-input"
-                required
               />
             </div>
 
             {/* Input Amount */}
             <div>
               <label className="block text-sm font-bold text-gray-700 dark:text-emerald-100 mb-1.5">
-                सहयोग रकम <span className="text-rose-500">*</span>
+                सहयोग रकम
               </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">₹</span>
@@ -219,7 +212,6 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
                   placeholder="जैसे: 1000"
                   min={1}
                   className="w-full pl-9 pr-4 py-3 rounded-xl text-sm font-numbers glass-input"
-                  required
                 />
               </div>
             </div>
@@ -227,7 +219,7 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
             {/* Upload Screenshot */}
             <div>
               <label className="block text-sm font-bold text-gray-700 dark:text-emerald-100 mb-1.5">
-                भुगतान स्क्रीनशॉट अपलोड <span className="text-rose-500">*</span>
+                भुगतान स्क्रीनशॉट अपलोड
               </label>
               
               <div className="flex items-center gap-4">
@@ -252,7 +244,6 @@ export const DonationForm: React.FC<DonationFormProps> = ({ settings, mode, onSu
                   onChange={handleFileChange}
                   accept="image/*"
                   className="hidden"
-                  required
                 />
               </div>
 

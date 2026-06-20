@@ -104,32 +104,23 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({ stats, loading, 
 
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 py-6 max-w-7xl mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 py-3 max-w-7xl mx-auto">
       {cardData.map((card, idx) => (
         <div
           key={idx}
-          className={`glass-card rounded-2xl p-3 md:p-4 flex flex-col justify-center gap-1 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 border ${
+          className={`glass-card rounded-2xl px-4 py-3 flex items-center justify-between shadow-sm transition-all duration-300 hover:shadow-md border ${
             loading ? 'animate-pulse' : ''
           }`}
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-2">
+            {card.icon}
+            <span className="text-base font-extrabold text-gray-800">
               {card.title}
             </span>
-            <div className={`p-1.5 rounded-lg ${card.bgColor}`}>
-              {card.icon}
-            </div>
           </div>
-
-          <div>
-            <span className={`text-xl md:text-2xl font-extrabold ${card.colorClass}`}>
-              ₹{loading ? <span className="font-numbers">0</span> : <AnimatedCounter value={card.value} />}
-            </span>
-          </div>
-
-          <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
-            {card.subtitle}
-          </div>
+          <span className={`text-lg md:text-xl font-extrabold ${card.colorClass}`}>
+            ₹{loading ? <span className="font-numbers">0</span> : <AnimatedCounter value={card.value} />}
+          </span>
         </div>
       ))}
     </div>

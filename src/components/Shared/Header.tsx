@@ -63,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Repeating background pattern */}
       <div className="absolute inset-0 bg-mosque-pattern opacity-5 pointer-events-none z-0"></div>
 
-      <div className="container mx-auto px-4 py-6 relative z-10 flex flex-col items-center justify-between min-h-[280px] md:min-h-[300px]">
+      <div className="container mx-auto px-4 py-4 relative z-10 flex flex-col items-center justify-center gap-4">
         {/* Top bar with buttons */}
         <div className="w-full flex justify-end items-center">
           {/* Action controls */}
@@ -118,30 +118,34 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
 
-        {/* Title and Islamic motifs */}
-        <div className="text-center mt-2 flex flex-col items-center">
+        {/* Title and Islamic motifs wrapped in a simple, compact glass card */}
+        <div className="text-center flex flex-col items-center max-w-2xl mx-auto w-full bg-white/5 dark:bg-black/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-5 shadow-lg">
           <h1 
-            className="cursor-pointer flex flex-col items-center gap-1.5 text-center select-none" 
+            className="cursor-pointer flex flex-col items-center gap-1 text-center select-none" 
             onClick={onHomeClick}
           >
-            <span className="text-2xl md:text-3xl font-extrabold tracking-wide drop-shadow-md">
+            <span className="text-xl md:text-2xl lg:text-3xl font-extrabold tracking-wide drop-shadow-md text-amber-300">
               {mode === 'masjid' ? 'अशरफ़ी जामा मस्जिद' : 'मदरसा गौसिया रिजविया रेयायतुल ऊलूम'}
             </span>
-            <span className="text-xs md:text-sm font-bold tracking-wider text-amber-300 drop-shadow-md">
+            <span className="text-[10px] md:text-xs font-semibold text-white/80 mt-1">
               छोटी लकड़ी, लकड़ी नबीगंज, सीवान, बिहार - 841447
             </span>
           </h1>
-          <p className="mt-2.5 max-w-lg text-sm md:text-base font-medium text-emerald-100 italic drop-shadow-sm px-4">
+
+          <div className="h-[1px] w-16 bg-amber-400/20 my-2"></div>
+
+          <p className="max-w-lg text-xs md:text-sm font-medium text-emerald-100 italic drop-shadow-sm px-4">
             {mode === 'masjid'
               ? '"अल्लाह के घर (मस्जिद) के लिए आपका तआवुन हमारे लिए क़ीमती है"'
               : '"दीन की तालीम (मदरसा) के लिए आपका तआवुन हमारे लिए क़ीमती है"'}
           </p>
+
           {onCommitteeClick && (
             <button
               onClick={onCommitteeClick}
-              className="mt-4 flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-full text-xs md:text-sm font-extrabold shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer border border-amber-400"
+              className="mt-3 flex items-center gap-1.5 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-emerald-950 rounded-full text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer border border-amber-400"
             >
-              <svg className="w-4.5 h-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               <span>कमेटी विवरण (Committee Info)</span>

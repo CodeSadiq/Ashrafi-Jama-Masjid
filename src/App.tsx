@@ -104,10 +104,10 @@ export const App: React.FC = () => {
       const today = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
       let csvContent = '\uFEFF'; // UTF-8 BOM
-      
+
       csvContent += `"${reportMode === 'masjid' ? 'अशरफ़ी जामा मस्जिद' : 'मदरसा गौसिया रिजविया रेयायतुल ऊलूम'}"\n`;
       csvContent += `"वित्तीय रिपोर्ट (Financial Report)","तारीख: ${today}"\n\n`;
-      
+
       csvContent += `"विवरण (Summary)","राशि (Amount)"\n`;
       csvContent += `"कुल आय (Total Collection)","₹${totalCollection}"\n`;
       csvContent += `"कुल खर्च (Total Expenses)","₹${totalExpenses}"\n`;
@@ -160,7 +160,7 @@ export const App: React.FC = () => {
       const memList = await getMembers(mode);
       const expList = await getExpenses(mode);
       const donList = await getDonations(mode, false);
-      
+
       setMembers(memList);
       setExpenses(expList);
       setDonations(donList);
@@ -457,9 +457,9 @@ export const App: React.FC = () => {
           <DashboardCards stats={getFilteredStats()} loading={loading} timeFilter={activeFilter} />
 
           {/* Unified Admin Contributors ledger list */}
-          <PublicSources 
-            members={members} 
-            mode={mode} 
+          <PublicSources
+            members={members}
+            mode={mode}
             loading={loading}
             isAdmin={isAdminMode}
             onAddMember={handleAddMember}
@@ -471,7 +471,7 @@ export const App: React.FC = () => {
           />
 
           {/* Unified Admin Expenses list */}
-          <ExpenseSection 
+          <ExpenseSection
             expenses={expenses}
             loading={loading}
             isAdmin={isAdminMode}
@@ -495,7 +495,7 @@ export const App: React.FC = () => {
                       {mode === 'masjid' ? 'मस्जिद रिपोर्ट डाउनलोड करें (Download Masjid Report)' : 'मदरसा रिपोर्ट डाउनलोड करें (Download Madrasa Report)'}
                     </h3>
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">
-                      {mode === 'masjid' 
+                      {mode === 'masjid'
                         ? 'वर्तमान तिथि तक मस्जिद के वित्तीय विवरणों (आय, व्यय एवं खाता बही) की Excel CSV रिपोर्ट डाउनलोड करें।'
                         : 'वर्तमान तिथि तक मदरसा के वित्तीय विवरणों (आय, व्यय एवं खाता बही) की Excel CSV रिपोर्ट डाउनलोड करें।'}
                     </p>
@@ -532,11 +532,11 @@ export const App: React.FC = () => {
 
       {/* Committee Details Modal Overlay */}
       {showCommitteeModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-dark-card border-2 border-emerald-800/20 dark:border-emerald-500/20 rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh] relative">
-            
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-0 md:p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-dark-card border-0 md:border-2 border-emerald-800/20 dark:border-emerald-500/20 rounded-none md:rounded-3xl max-w-none md:max-w-2xl w-full h-full md:h-auto max-h-screen md:max-h-[90vh] shadow-2xl overflow-hidden flex flex-col relative">
+
             {/* Close Button */}
-            <button 
+            <button
               type="button"
               onClick={() => setShowCommitteeModal(false)}
               className="absolute top-4 right-4 text-emerald-900/60 hover:text-emerald-950 dark:text-emerald-300/60 dark:hover:text-white p-1.5 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors z-10"
@@ -553,9 +553,7 @@ export const App: React.FC = () => {
                 <span className="text-lg md:text-xl font-arabic text-emerald-700 dark:text-emerald-400 block tracking-widest font-semibold">
                   بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
                 </span>
-                <span className="inline-block px-4 py-1 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-xs font-bold rounded-full border border-emerald-200/50 dark:border-emerald-800/30">
-                  मदरसा नई कमेटी गठन
-                </span>
+
                 <h2 className="text-xl md:text-2xl font-black text-emerald-900 dark:text-emerald-200">
                   मदरसा गौसिया रिजविया रेयायतुल ऊलूम
                 </h2>
@@ -563,7 +561,7 @@ export const App: React.FC = () => {
               </div>
 
               {/* Officers section (Sadar & Secretary) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3.5">
                 {/* Sadar */}
                 <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-50/50 to-white dark:from-emerald-950/20 dark:to-dark-card border border-emerald-800/10 dark:border-emerald-500/10 shadow-sm flex flex-col justify-between items-center text-center gap-2 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full translate-x-8 -translate-y-8"></div>
@@ -571,7 +569,7 @@ export const App: React.FC = () => {
                     <span className="px-3 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded-full tracking-wider uppercase">सदर (President)</span>
                     <h4 className="text-lg font-extrabold text-gray-800 dark:text-emerald-100 mt-2">फ़ैयाज अहमद साहब</h4>
                   </div>
-                  <a 
+                  <a
                     href="tel:9801163209"
                     className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 group-hover:shadow font-numbers mt-2"
                   >
@@ -589,7 +587,7 @@ export const App: React.FC = () => {
                     <span className="px-3 py-0.5 bg-blue-600 text-white text-[10px] font-bold rounded-full tracking-wider uppercase">सेक्रेट्री (Secretary)</span>
                     <h4 className="text-lg font-extrabold text-gray-800 dark:text-emerald-100 mt-2">नकी इमाम साहब</h4>
                   </div>
-                  <a 
+                  <a
                     href="tel:8051376767"
                     className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all active:scale-95 group-hover:shadow font-numbers mt-2"
                   >
@@ -636,7 +634,7 @@ export const App: React.FC = () => {
                             <td className="py-3 px-4 text-center font-numbers text-gray-400 dark:text-gray-500 font-bold">{idx + 1}</td>
                             <td className="py-3 px-4 font-bold text-gray-700 dark:text-emerald-100">{member.name}</td>
                             <td className="py-3 px-4 text-right">
-                              <a 
+                              <a
                                 href={`tel:${member.phone}`}
                                 className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-950/60 transition-colors text-xs font-semibold font-numbers border border-emerald-200/50 dark:border-emerald-800/20"
                                 title="डायरेक्ट कॉल करें"
@@ -680,11 +678,11 @@ export const App: React.FC = () => {
       {/* Login Modal Overlay */}
       {showLoginModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
-          <form 
+          <form
             onSubmit={handleLoginSubmit}
             className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-3xl p-6 md:p-8 max-w-md w-full space-y-4 shadow-2xl relative"
           >
-            <button 
+            <button
               type="button"
               onClick={() => {
                 setShowLoginModal(false);
@@ -722,7 +720,6 @@ export const App: React.FC = () => {
                   onChange={(e) => setLoginCode(e.target.value)}
                   placeholder="कोड दर्ज करें"
                   className="w-full px-4 py-3 text-sm rounded-xl glass-input font-numbers text-center tracking-widest"
-                  required
                 />
               </div>
 

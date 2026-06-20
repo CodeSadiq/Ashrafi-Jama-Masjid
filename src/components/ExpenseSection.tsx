@@ -234,11 +234,7 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
     e.preventDefault();
     const amount = parseFloat(expenseForm.amount);
     if (isNaN(amount) || amount <= 0) return;
-    if (!audioBase64) {
-      alert('कृपया पहले खर्च का विवरण स्पष्ट करने के लिए आवाज रिकॉर्ड करें।');
-      return;
-    }
-    await onAddExpense(amount, 'ऑडियो रिकॉर्डिंग', audioBase64);
+    await onAddExpense(amount, 'खर्च प्रविष्टि', audioBase64 || undefined);
     setExpenseForm({ amount: '' });
     clearRecording();
   };
@@ -277,18 +273,17 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
             {mode === 'masjid' ? 'मस्जिद' : 'मदरसा'} के मद में किए गए खर्च का ब्यौरा दर्ज करें
           </p>
           <div>
-            <label className="block text-xs font-bold text-gray-500 mb-1">खर्च राशि (Amount in ₹) *</label>
+            <label className="block text-xs font-bold text-gray-500 mb-1">खर्च राशि (Amount in ₹)</label>
             <input
               type="number"
               value={expenseForm.amount}
               onChange={(e) => setExpenseForm(prev => ({ ...prev, amount: e.target.value }))}
               placeholder="जैसे: 500"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input font-numbers"
-              required
             />
           </div>
           <div className="space-y-2">
-            <label className="block text-xs font-bold text-gray-500 mb-1">खर्च का विवरण (ऑडियो रिकॉर्डिंग) *</label>
+            <label className="block text-xs font-bold text-gray-500 mb-1">खर्च का विवरण (ऑडियो रिकॉर्डिंग)</label>
             
             {recordingState === 'idle' && (
               <button
@@ -358,24 +353,24 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
       )}
 
       {/* Expense List - 8 or 12 cols depending on isAdmin */}
-      <div className={`${isAdmin ? 'lg:col-span-8' : 'lg:col-span-12'} bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-3xl p-5 md:p-6 shadow-sm space-y-4`}>
-        <div className="flex flex-wrap justify-between items-start gap-4 pb-4 border-b border-gray-100 dark:border-dark-border">
+      <div className={`${isAdmin ? 'lg:col-span-8' : 'lg:col-span-12'} bg-[#059669] dark:bg-emerald-900 border border-emerald-500 rounded-3xl p-4 md:p-6 shadow-md text-white space-y-4`}>
+        <div className="flex flex-wrap justify-between items-start gap-4 pb-4 border-b border-emerald-500/30">
           <div className="flex-1 min-w-[200px]">
-            <h3 className="text-lg font-bold text-gray-800 dark:text-emerald-100 flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.25">
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <svg className="w-5 h-5 text-amber-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.25">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               खर्चों की सूची
             </h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium max-w-xs md:max-w-sm">
+            <p className="text-xs text-emerald-100 mt-1.5 font-medium max-w-xs md:max-w-sm">
               {mode === 'masjid' ? 'मस्जिद' : 'मदरसा'} के विकास व अन्य मदों में {timeFilter === 'month' ? 'इस महीने' : timeFilter === 'year' ? 'इस साल' : 'कुल'} किए गए खर्चों का लेखा-जोखा
             </p>
           </div>
           <div className="text-right">
-            <span className="text-xs text-gray-400 dark:text-gray-500 font-semibold block">
+            <span className="text-xs text-emerald-100 font-semibold block">
               {timeFilter === 'month' ? 'इस महीने का खर्च' : timeFilter === 'year' ? 'इस साल का खर्च' : 'कुल खर्च'}
             </span>
-            <span className="text-lg font-extrabold text-rose-600 dark:text-rose-400 font-numbers">
+            <span className="text-lg font-extrabold text-rose-100 dark:text-rose-300 font-numbers">
               ₹{totalExpense.toLocaleString('en-IN')}
             </span>
           </div>
@@ -391,14 +386,15 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
             कोई खर्च दर्ज नहीं है।
           </div>
         ) : (
-          <div className="overflow-x-auto no-scrollbar">
-            <table className="w-full text-left border-collapse">
+          <>
+            <div className="hidden md:block max-h-[550px] overflow-y-auto overflow-x-auto no-scrollbar pr-1">
+              <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-gray-100 dark:border-dark-border/50 text-xs font-bold text-gray-400 dark:text-gray-500">
-                  <th className="py-3 px-4">तारीख</th>
-                  <th className="py-3 px-4">खर्च विवरण</th>
-                  <th className="py-3 px-4 text-right">खर्च राशि</th>
-                  {isAdmin && <th className="py-3 px-4 text-right">कार्रवाई</th>}
+                <tr className="sticky top-0 bg-white dark:bg-dark-card border-b border-gray-100 dark:border-dark-border/50 text-xs font-bold text-gray-400 dark:text-gray-500 z-10">
+                  <th className="py-3 px-4 bg-white dark:bg-dark-card">तारीख</th>
+                  <th className="py-3 px-4 bg-white dark:bg-dark-card">खर्च विवरण</th>
+                  <th className="py-3 px-4 text-right bg-white dark:bg-dark-card">खर्च राशि</th>
+                  {isAdmin && <th className="py-3 px-4 text-right bg-white dark:bg-dark-card">कार्रवाई</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-dark-border/30 text-sm">
@@ -415,7 +411,6 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
                               value={editDate}
                               onChange={(e) => setEditDate(e.target.value)}
                               className="w-full px-2 py-1.5 text-xs rounded-lg glass-input border border-gray-200 dark:border-dark-border font-numbers"
-                              required
                             />
                           </td>
                           {/* 2. Audio Edit */}
@@ -484,7 +479,6 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
                                 value={editAmount}
                                 onChange={(e) => setEditAmount(e.target.value)}
                                 className="w-24 px-2 py-1 text-xs rounded-lg glass-input text-right border border-gray-200 dark:border-dark-border font-numbers"
-                                required
                               />
                             </div>
                           </td>
@@ -517,17 +511,17 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
                       ) : (
                         <>
                           {/* Display Read Only fields */}
-                          <td className="py-3.5 px-4 text-gray-500 dark:text-gray-400 font-numbers font-semibold whitespace-nowrap">
+                          <td className="py-3.5 px-4 text-emerald-100 dark:text-emerald-300 font-numbers font-semibold whitespace-nowrap">
                             {formatDate(expense.date)}
                           </td>
-                          <td className="py-3.5 px-4 font-bold text-gray-700 dark:text-emerald-100">
+                          <td className="py-3.5 px-4 font-bold text-white dark:text-emerald-50">
                             {expense.audio ? (
                               <AudioIconPlayer src={expense.audio} />
                             ) : (
                               <span>{expense.purpose}</span>
                             )}
                           </td>
-                          <td className="py-3.5 px-4 text-right font-numbers font-extrabold text-rose-600 dark:text-rose-400 whitespace-nowrap">
+                          <td className="py-3.5 px-4 text-right font-numbers font-extrabold text-rose-100 dark:text-rose-300 whitespace-nowrap">
                             ₹{expense.amount.toLocaleString('en-IN')}
                           </td>
                           {isAdmin && (
@@ -564,7 +558,178 @@ export const ExpenseSection: React.FC<ExpenseSectionProps> = ({
               </tbody>
             </table>
           </div>
-        )}
+
+          {/* Mobile List View */}
+          <div className="md:hidden space-y-2.5 max-h-[550px] overflow-y-auto pr-1">
+            {filteredExpenses.map((expense) => {
+              const isEditing = editingExpenseId === expense.id;
+              return (
+                <div
+                  key={expense.id}
+                  className="p-3 bg-white dark:bg-dark-card border border-gray-200/50 dark:border-dark-border rounded-2xl shadow-sm space-y-3"
+                >
+                  {isEditing ? (
+                    <div className="space-y-3 text-left">
+                      {/* 1. Date Edit */}
+                      <div>
+                        <label className="block text-xs font-bold text-gray-600 dark:text-emerald-200/80 mb-1">तारीख (Date)</label>
+                        <input
+                          type="date"
+                          value={editDate}
+                          onChange={(e) => setEditDate(e.target.value)}
+                          className="w-full px-2.5 py-2 text-xs rounded-lg glass-input border border-gray-200 dark:border-dark-border font-numbers text-gray-800 dark:text-white bg-white dark:bg-dark-card"
+                        />
+                      </div>
+                      
+                      {/* 2. Audio Edit */}
+                      <div>
+                        <label className="block text-xs font-bold text-gray-600 dark:text-emerald-200/80 mb-1">विवरण ऑडियो (Audio)</label>
+                        <div className="flex items-center gap-2">
+                          {editRecordingState === 'idle' && (
+                            <div className="flex items-center gap-2">
+                              {editAudioBase64 ? (
+                                <AudioIconPlayer src={editAudioUrl || editAudioBase64} />
+                              ) : (
+                                <span className="text-[10px] text-gray-500 dark:text-gray-400">कोई ऑडियो नहीं है</span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={startEditRecording}
+                                className="p-1.5 text-emerald-600 hover:text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 rounded-lg transition-all cursor-pointer"
+                                title="नया ऑडियो रिकॉर्ड करें"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.5a6.5 6.5 0 0 0 6.5-6.5V9a6.5 6.5 0 0 0-13 0v3a6.5 6.5 0 0 0 6.5 6.5z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.5v3.5M8 22h8" />
+                                </svg>
+                              </button>
+                            </div>
+                          )}
+
+                          {editRecordingState === 'recording' && (
+                            <div className="flex items-center gap-2 bg-rose-50/40 dark:bg-rose-950/10 p-1.5 rounded-lg border border-rose-200/50 dark:border-rose-900/30">
+                              <span className="w-2 h-2 bg-rose-600 rounded-full animate-ping"></span>
+                              <span className="text-[10px] font-bold font-numbers text-gray-700 dark:text-emerald-100">
+                                {Math.floor(editRecordingDuration / 60)}:{(editRecordingDuration % 60).toString().padStart(2, '0')}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={stopEditRecording}
+                                className="p-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-[10px] font-bold cursor-pointer"
+                              >
+                                रोकें
+                              </button>
+                            </div>
+                          )}
+
+                          {editRecordingState === 'preview' && editAudioUrl && (
+                            <div className="flex items-center gap-2">
+                              <AudioIconPlayer src={editAudioUrl} />
+                              <button
+                                type="button"
+                                onClick={clearEditRecording}
+                                className="p-1 text-rose-600 hover:text-rose-700 bg-rose-50 dark:bg-rose-950/30 rounded-lg cursor-pointer"
+                                title="हटाएं"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 3. Amount Edit */}
+                      <div>
+                        <label className="block text-xs font-bold text-gray-600 dark:text-emerald-200/80 mb-1">रकम (Amount)</label>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-gray-600 dark:text-emerald-200/80 font-bold text-sm">₹</span>
+                          <input
+                            type="number"
+                            value={editAmount}
+                            onChange={(e) => setEditAmount(e.target.value)}
+                            className="w-full px-2.5 py-2 text-xs rounded-lg glass-input border border-gray-200 dark:border-dark-border font-numbers text-right text-gray-800 dark:text-white bg-white dark:bg-dark-card"
+                          />
+                        </div>
+                      </div>
+
+                      {/* 4. Actions */}
+                      <div className="flex items-center gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => handleSaveEdit(expense.id)}
+                          className="flex-1 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span>सुरक्षित करें</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={cancelEdit}
+                          className="flex-1 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-dark-border dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 cursor-pointer"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                          <span>रद्द करें</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between gap-3 text-xs w-full">
+                      {/* Left side: Date & Description */}
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 font-semibold font-numbers shrink-0">
+                          {formatDate(expense.date)}
+                        </span>
+                        <div className="font-semibold text-gray-700 dark:text-emerald-100 truncate">
+                          {expense.audio ? (
+                            <AudioIconPlayer src={expense.audio} />
+                          ) : null}
+                        </div>
+                      </div>
+                      
+                      {/* Right side: Amount & Actions */}
+                      <div className="flex items-center gap-2.5 shrink-0">
+                        <span className="font-numbers font-extrabold text-rose-600 dark:text-rose-400 text-sm">
+                          ₹{expense.amount.toLocaleString('en-IN')}
+                        </span>
+                        {isAdmin && (
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => startEdit(expense)}
+                              className="p-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-950/20 rounded-lg transition-all cursor-pointer"
+                              title="संपादित करें"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onDeleteExpense && onDeleteExpense(expense.id)}
+                              className="p-1 text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 bg-rose-50 dark:bg-rose-950/20 rounded-lg transition-all cursor-pointer"
+                              title="हटाएं"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
       </div>
     </div>
   );

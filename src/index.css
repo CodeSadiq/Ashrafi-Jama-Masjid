@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Mukta', 'Outfit', system-ui, -apple-system, sans-serif;
   --font-display: 'Outfit', 'Mukta', sans-serif;
@@ -14,12 +16,17 @@
   --color-islamic-gold: #d97706;
   --color-islamic-gold-light: #fef3c7;
   
-  --color-dark-bg: #03140b;
-  --color-dark-card: #0a2517;
-  --color-dark-border: #143d28;
-  --color-dark-mint: #0f2d1e;
-  
   --animate-counter: counter 1s ease-out forwards;
+  --animate-audio-wave: audio-wave 1s ease-in-out infinite;
+
+  @keyframes audio-wave {
+    0%, 100% {
+      transform: scaleY(0.2);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
 }
 
 @layer base {
@@ -36,17 +43,9 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160' width='80' height='80' opacity='0.03'%3E%3Cpath d='M80,10 C92,30 92,45 92,60 L98,60 L98,75 L106,75 L106,160 L54,160 L54,75 L62,75 L62,60 L68,60 C68,45 68,30 80,10 Z M120,65 C126,75 126,82 126,90 L129,90 L129,160 L111,160 L111,90 L114,90 C114,82 114,75 120,65 Z M40,65 C46,75 46,82 46,90 L49,90 L49,160 L31,160 L31,90 L34,90 C34,82 34,75 40,65 Z' fill='%23064e3b'/%3E%3C/svg%3E");
 }
 
-.dark .bg-mosque-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160' width='80' height='80' opacity='0.02'%3E%3Cpath d='M80,10 C92,30 92,45 92,60 L98,60 L98,75 L106,75 L106,160 L54,160 L54,75 L62,75 L62,60 L68,60 C68,45 68,30 80,10 Z M120,65 C126,75 126,82 126,90 L129,90 L129,160 L111,160 L111,90 L114,90 C114,82 114,75 120,65 Z M40,65 C46,75 46,82 46,90 L49,90 L49,160 L31,160 L31,90 L34,90 C34,82 34,75 40,65 Z' fill='%23ffffff'/%3E%3C/svg%3E");
-}
-
 /* Islamic Geometric Background Accent */
 .bg-islamic-geometric {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60' opacity='0.025'%3E%3Cpath d='M30,0 L35,15 L50,10 L40,23 L58,30 L40,37 L50,50 L35,45 L30,60 L25,45 L10,50 L20,37 L2,30 L20,23 L10,10 L25,15 Z' fill='%23064e3b'/%3E%3C/svg%3E");
-}
-
-.dark .bg-islamic-geometric {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60' opacity='0.015'%3E%3Cpath d='M30,0 L35,15 L50,10 L40,23 L58,30 L40,37 L50,50 L35,45 L30,60 L25,45 L10,50 L20,37 L2,30 L20,23 L10,10 L25,15 Z' fill='%23ffffff'/%3E%3C/svg%3E");
 }
 
 /* Premium Card styling */
@@ -55,13 +54,6 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(6, 78, 59, 0.08);
-}
-
-.dark .glass-card {
-  background: rgba(10, 37, 23, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Hide default scrollbars but keep functional */
@@ -83,16 +75,6 @@
   outline: none;
   border-color: #064e3b;
   box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.15);
-}
-
-.dark .glass-input {
-  background: rgba(13, 45, 29, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #f0fdf4;
-}
-.dark .glass-input:focus {
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
 }
 
 /* Active Highlight slider style */

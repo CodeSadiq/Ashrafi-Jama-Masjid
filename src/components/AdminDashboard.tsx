@@ -94,14 +94,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Add Member / Source
   const handleAddSourceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!sourceForm.name || !sourceForm.mobile) {
-      showToast('कृपया नाम और मोबाइल नंबर दर्ज करें', 'warning');
+    if (!sourceForm.name) {
+      showToast('कृपया नाम दर्ज करें', 'warning');
       return;
     }
     try {
       await addMember({
         name: sourceForm.name,
-        mobile: sourceForm.mobile,
+        mobile: sourceForm.mobile || '',
         address: '',
         monthlyFee: 0 // Simplification: we don't need monthlyFee constraints anymore
       });
@@ -300,18 +300,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             सहयोग या चंदा देने वाले व्यक्ति का नाम व मोबाइल नंबर दर्ज करें
           </p>
           <div>
-            <label className="block text-xs font-bold text-gray-500 mb-1">सहयोगी का नाम (Name) *</label>
+            <label className="block text-xs font-bold text-gray-500 mb-1">सहयोगी का नाम (Name)</label>
             <input
               type="text"
               value={sourceForm.name}
               onChange={(e) => setSourceForm(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="जैसे: सादिक खान"
+              placeholder="जैसे: सादिक इमाम"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input"
-              required
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-gray-500 mb-1">मोबाइल नंबर (Mobile) *</label>
+            <label className="block text-xs font-bold text-gray-500 mb-1">मोबाइल नंबर (Mobile)</label>
             <input
               type="tel"
               value={sourceForm.mobile}
@@ -319,7 +318,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               placeholder="जैसे: 9876543210"
               maxLength={10}
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input font-numbers"
-              required
             />
           </div>
           <button type="submit" className="w-full py-3 bg-islamic-green hover:bg-islamic-green-hover text-white rounded-xl text-sm font-bold shadow-sm transition-all active:scale-98 cursor-pointer">
@@ -336,25 +334,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             {activeMode === 'masjid' ? 'मस्जिद' : 'मदरसा'} के मद में किए गए खर्च का ब्यौरा दर्ज करें
           </p>
           <div>
-            <label className="block text-xs font-bold text-gray-500 mb-1">खर्च राशि (Amount in ₹) *</label>
+            <label className="block text-xs font-bold text-gray-500 mb-1">खर्च राशि (Amount in ₹)</label>
             <input
               type="number"
               value={expenseForm.amount}
               onChange={(e) => setExpenseForm(prev => ({ ...prev, amount: e.target.value }))}
               placeholder="जैसे: 500"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input font-numbers"
-              required
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-gray-500 mb-1">खर्च विवरण (Purpose) *</label>
+            <label className="block text-xs font-bold text-gray-500 mb-1">खर्च विवरण (Purpose)</label>
             <input
               type="text"
               value={expenseForm.purpose}
               onChange={(e) => setExpenseForm(prev => ({ ...prev, purpose: e.target.value }))}
               placeholder="जैसे: बिजली बिल, मरम्मत कार्य, आदि"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl glass-input"
-              required
             />
           </div>
           <button type="submit" className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-bold shadow-sm transition-all active:scale-98 cursor-pointer">
