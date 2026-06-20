@@ -150,12 +150,12 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
             </p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="text-right shrink-0">
-              <span className="text-xs md:text-sm text-emerald-100/90 font-bold block uppercase">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="text-right">
+              <span className="text-[10px] md:text-xs text-emerald-100/90 font-bold block uppercase">
                 {timeFilter === 'today' ? 'आज का जमा' : timeFilter === 'month' ? 'इस महीने का जमा' : timeFilter === 'year' ? 'इस साल का जमा' : 'कुल जमा'}
               </span>
-              <span className="text-xl md:text-2xl font-black text-amber-300 font-numbers">
+              <span className="text-lg md:text-2xl font-black text-amber-300 font-numbers">
                 ₹{totalCollectionSum.toLocaleString('en-IN')}
               </span>
             </div>
@@ -164,10 +164,10 @@ export const PublicSources: React.FC<PublicSourcesProps> = ({
             {isAdmin && (
               <button
                 onClick={() => setShowAddModal(true)}
-                className="flex items-center justify-center w-10 h-10 bg-islamic-green hover:bg-islamic-green-hover text-white rounded-full shadow-md active:scale-95 transition-transform"
+                className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-islamic-green hover:bg-islamic-green-hover text-white rounded-full shadow-md active:scale-95 transition-transform shrink-0"
                 title="नया सहयोगी जोड़ें"
               >
-                <span className="text-2xl font-bold font-sans">+</span>
+                <span className="text-xl md:text-2xl font-bold font-sans">+</span>
               </button>
             )}
           </div>
